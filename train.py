@@ -1,4 +1,5 @@
-import numpy as np
+from evaluate import evaluate
+
 
 def train_one_epoch(
     model,
@@ -6,6 +7,8 @@ def train_one_epoch(
     criterion,
     optimizer,
 ):
+    model.train()
+
     epoch_loss = 0.0
 
     for images, labels in train_loader:
@@ -31,6 +34,8 @@ def validate_one_epoch(
     validation_loader,
     criterion,
 ):
+    model.eval()
+
     epoch_loss = 0.0
 
     for images, labels in validation_loader:
@@ -52,6 +57,7 @@ def train(
     epochs,
 ):
     for epoch in range(epochs):
+
         train_loss = train_one_epoch(
             model=model,
             train_loader=train_loader,
@@ -59,14 +65,15 @@ def train(
             optimizer=optimizer,
         )
 
-        validation_loss = validate_one_epoch(
+        validation_loss, validation_accuracy = evaluate(
             model=model,
-            validation_loader=validation_loader,
+            test_loader=validation_loader,
             criterion=criterion,
         )
 
         print(
             f"Epoch [{epoch + 1}/{epochs}] "
             f"Train Loss: {train_loss:.4f} "
-            f"Validation Loss: {validation_loss:.4f}"
+            f"Validation Loss: {validation_loss:.4f} "
+            f"Validation Accuracy: {validation_accuracy * 100:.2f}%"
         )

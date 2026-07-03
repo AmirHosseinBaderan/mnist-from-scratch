@@ -12,6 +12,7 @@ from nn.sequential import Sequential
 from transforms.compose import Compose
 from transforms.reshape import Reshape
 from transforms.to_numpy import ToNumpy
+from nn.sgd import SGD
 
 compose = Compose([
     ToNumpy(),
@@ -30,20 +31,12 @@ loader = DataLoader(
     shuffle=True,
 )
 
-criterion = CrossEntropyLoss()
+w = Parameter(np.array([1.0, 2.0]))
 
-logits = np.array([
-    [2.0, 1.0, 0.1],
-    [0.5, 2.5, 0.3]
-])
+w.grad = np.array([0.1, 0.2])
 
-targets = np.array([0, 1])
+optimizer = SGD([w], learning_rate=0.5)
 
-loss = criterion(logits, targets)
+optimizer.step()
 
-print(loss)
-
-grad = criterion.backward()
-
-print(grad)
-print(grad.shape)
+print(w.data)

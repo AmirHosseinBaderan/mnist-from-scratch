@@ -16,3 +16,9 @@ class Module:
 
     def eval(self):
         self.training = False
+
+        for child in self.children():
+            child.eval()
+
+    def children(self):
+        return []

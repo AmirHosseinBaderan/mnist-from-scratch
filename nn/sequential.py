@@ -24,3 +24,6 @@ class Sequential(Module):
             params.extend(layer.parameters())
 
         return params
+
+    def children(self):
+        return self.layers

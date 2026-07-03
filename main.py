@@ -1,10 +1,14 @@
 from data.dataset import MNISTDataset
 import matplotlib.pyplot as plt
+import numpy as np
 
 from data.loader import DataLoader
-from transformers.compose import Compose
-from transformers.reshape import Reshape
-from transformers.to_numpy import ToNumpy
+from nn.linear import Linear
+from nn.module import Module
+from nn.parameter import Parameter
+from transforms.compose import Compose
+from transforms.reshape import Reshape
+from transforms.to_numpy import ToNumpy
 
 compose = Compose([
     ToNumpy(),
@@ -23,11 +27,18 @@ loader = DataLoader(
     shuffle=True,
 )
 
-for images, labels in loader:
-    i = 0
-    for image, label in zip(images, labels):
-        i += 1
-        plt.title(f"Label {label} / index : {i}")
-        plt.imshow(image,cmap="gray")
-        plt.show()
-    break
+linear = Linear(784, 128)
+
+x = np.random.randn(32, 784)
+
+y = linear(x)
+
+grad = np.random.randn(32, 128)
+
+dx = linear.backward(grad)
+
+print(dx.shape)
+
+print(linear.weight.grad.shape)
+
+print(linear.bias.grad.shape)

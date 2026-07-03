@@ -22,3 +22,12 @@ class MNISTDataset:
             count = struct.unpack(">I", f.read(4))[0]
 
         return magic, count
+
+    def read_first_image(self):
+        with open(self.image_path, 'rb') as f:
+            # header
+            f.read(16)
+
+            image = f.read(28 * 28)
+
+        return image

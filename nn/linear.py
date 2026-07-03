@@ -48,10 +48,12 @@ class Linear(Module):
         return parameters
 
     def backward(self, grad_output):
+
+        grad_input = grad_output @ self.weight.data.T
+
         self.weight.grad = self.input.T @ grad_output
 
         if self.bias is not None:
             self.bias.grad = grad_output.sum(axis=0)
 
-        grad_input = grad_output @ self.weight.data.T
         return grad_input

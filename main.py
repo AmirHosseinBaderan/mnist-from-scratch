@@ -1,6 +1,7 @@
 from dataset import MNISTDataset
 import matplotlib.pyplot as plt
 
+from transformers.compose import Compose
 from transformers.reshape import Reshape
 from transformers.to_numpy import ToNumpy
 
@@ -10,11 +11,13 @@ dataset = MNISTDataset(
 )
 
 image, label = dataset[0]
-to_numpy = ToNumpy()
-reshape = Reshape(28, 28)
 
-image = to_numpy(image)
-image = reshape(image)
+compose = Compose([
+    ToNumpy(),
+    Reshape(28,28),
+])
+
+image = compose(image)
 
 plt.imshow(image,cmap="gray")
 plt.show()

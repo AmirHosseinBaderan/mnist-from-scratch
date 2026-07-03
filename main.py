@@ -6,6 +6,7 @@ from data.loader import DataLoader
 from nn.linear import Linear
 from nn.module import Module
 from nn.parameter import Parameter
+from nn.relu import ReLU
 from transforms.compose import Compose
 from transforms.reshape import Reshape
 from transforms.to_numpy import ToNumpy
@@ -27,18 +28,17 @@ loader = DataLoader(
     shuffle=True,
 )
 
-linear = Linear(784, 128)
+relu = ReLU()
+x = np.array([
+    [-2, -1, 0, 1, 2],
+    [-2, -1, 0, 4, 3]
+])
 
-x = np.random.randn(32, 784)
+y = relu(x)
+print(y)
 
-y = linear(x)
+grad = np.ones_like(y)
 
-grad = np.random.randn(32, 128)
+dx = relu.backward(grad)
 
-dx = linear.backward(grad)
-
-print(dx.shape)
-
-print(linear.weight.grad.shape)
-
-print(linear.bias.grad.shape)
+print(dx)

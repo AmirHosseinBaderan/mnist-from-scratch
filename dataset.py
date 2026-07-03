@@ -4,8 +4,8 @@ import struct
 class MNISTDataset:
 
     def __init__(self, image_path, label_path):
-        self.image_path = image_path
-        self.label_path = label_path
+        self.image_file = open(image_path, "rb")
+        self.label_file = open(label_path, "rb")
 
         (
             self.image_magic,
@@ -22,42 +22,32 @@ class MNISTDataset:
     def __len__(self):
         return self.image_count
 
+    def __del__(self):
+        self.image_file.close()
+        self.label_file.close()
+
     def __getitem__(self, idx):
         image_offset = 16 + idx * self.rows * self.cols
         label_offset = 8 + idx
 
-        with open(self.image_path, 'rb') as f:
-            f.seek(image_offset)
+        self.image_file.seek(image_offset)
+        image = self.image_file.read(self.rows * self.cols)
 
-            image = f.read(self.rows * self.cols)
-
-        with open(self.label_path, 'rb') as f:
-            f.seek(label_offset)
-            label = f.read(1)[0]
+        self.label_file.seek(label_offset)
+        label = self.label_file.read(1)[0]
 
         return image, label
 
     def _read_image_header(self):
-        with open(self.image_path, 'rb') as f:
-            magic = struct.unpack(">I", f.read(4))[0]
-            count = struct.unpack(">I", f.read(4))[0]
-            rows = struct.unpack(">I", f.read(4))[0]
-            cols = struct.unpack(">I", f.read(4))[0]
+        magic = struct.unpack(">I", self.image_file.read(4))[0]
+        count = struct.unpack(">I", self.image_file.read(4))[0]
+        rows = struct.unpack(">I", self.image_file.read(4))[0]
+        cols = struct.unpack(">I", self.image_file.read(4))[0]
 
         return magic, count, rows, cols
 
     def _read_label_header(self):
-        with open(self.label_path, 'rb') as f:
-            magic = struct.unpack(">I", f.read(4))[0]
-            count = struct.unpack(">I", f.read(4))[0]
+        magic = struct.unpack(">I", self.label_file.read(4))[0]
+        count = struct.unpack(">I", self.label_file.read(4))[0]
 
         return magic, count
-
-    def read_first_image(self):
-        with open(self.image_path, 'rb') as f:
-            # header
-            f.read(16)
-
-            image = f.read(28 * 28)
-
-        return image

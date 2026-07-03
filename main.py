@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from data.loader import DataLoader
+from nn.cross_entropy import CrossEntropyLoss
 from nn.linear import Linear
 from nn.module import Module
 from nn.parameter import Parameter
@@ -29,36 +30,20 @@ loader = DataLoader(
     shuffle=True,
 )
 
-relu = ReLU()
-x = np.array([
-    [-2, -1, 0, 1, 2],
-    [-2, -1, 0, 4, 3]
+criterion = CrossEntropyLoss()
+
+logits = np.array([
+    [2.0, 1.0, 0.1],
+    [0.5, 2.5, 0.3]
 ])
 
-y = relu(x)
-print(y)
+targets = np.array([0, 1])
 
-grad = np.ones_like(y)
+loss = criterion(logits, targets)
 
-dx = relu.backward(grad)
+print(loss)
 
-print(dx)
+grad = criterion.backward()
 
-model = Sequential(
-    Linear(784, 128),
-    ReLU(),
-    Linear(128, 10),
-)
-
-x = np.random.randn(32, 784)
-
-y = model(x)
-
-print(y.shape)
-
-grad = np.random.randn(32, 10)
-
-dx = model.backward(grad)
-
-print(dx.shape)
-len(model.parameters())
+print(grad)
+print(grad.shape)

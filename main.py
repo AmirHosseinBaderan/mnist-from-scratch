@@ -1,6 +1,7 @@
-from dataset import MNISTDataset
+from data.dataset import MNISTDataset
 import matplotlib.pyplot as plt
 
+from data.loader import DataLoader
 from transformers.compose import Compose
 from transformers.reshape import Reshape
 from transformers.to_numpy import ToNumpy
@@ -16,7 +17,12 @@ dataset = MNISTDataset(
     image_transform=compose,
 )
 
-image, label = dataset[0]
+loader = DataLoader(
+    dataset,
+    batch_size=32,
+    shuffle=True,
+)
 
-plt.imshow(image,cmap="gray")
-plt.show()
+for images,labels in loader:
+    print(images.shape)
+    print(labels.shape)

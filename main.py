@@ -3,6 +3,7 @@ from config import IMAGE_COLS
 
 from data.dataset import MNISTDataset
 from data.loader import DataLoader
+from digit_drawer import DigitDrawer
 from predict import predict
 from transforms.flatten import Flatten
 
@@ -74,10 +75,13 @@ train(
     epochs=EPOCHS,
 )
 
-print("\n========== Prediction ==========\n")
+# print("\n========== Prediction ==========\n")
+#
+# predict(
+#     model=model,
+#     data_loader=test_loader,
+#     count=20,
+# )
 
-predict(
-    model=model,
-    data_loader=test_loader,
-    count=20,
-)
+app = DigitDrawer(model)
+app.run()

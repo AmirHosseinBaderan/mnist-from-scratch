@@ -8,7 +8,7 @@ from transformers.to_numpy import ToNumpy
 
 compose = Compose([
     ToNumpy(),
-    Reshape(28,28),
+    Reshape(28, 28),
 ])
 
 dataset = MNISTDataset(
@@ -23,6 +23,11 @@ loader = DataLoader(
     shuffle=True,
 )
 
-for images,labels in loader:
-    print(images.shape)
-    print(labels.shape)
+for images, labels in loader:
+    i = 0
+    for image, label in zip(images, labels):
+        i += 1
+        plt.title(f"Label {label} / index : {i}")
+        plt.imshow(image,cmap="gray")
+        plt.show()
+    break

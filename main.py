@@ -1,42 +1,83 @@
-from data.dataset import MNISTDataset
-import matplotlib.pyplot as plt
-import numpy as np
+from config import *
+from config import IMAGE_COLS
 
+from data.dataset import MNISTDataset
 from data.loader import DataLoader
-from nn.cross_entropy import CrossEntropyLoss
+from predict import predict
+from transforms.flatten import Flatten
+
+from transforms.compose import Compose
+from transforms.normalize import Normalize
+from transforms.to_numpy import ToNumpy
+from transforms.reshape import Reshape
+
 from nn.linear import Linear
-from nn.module import Module
-from nn.parameter import Parameter
 from nn.relu import ReLU
 from nn.sequential import Sequential
-from transforms.compose import Compose
-from transforms.reshape import Reshape
-from transforms.to_numpy import ToNumpy
-from nn.sgd import SGD
 
-compose = Compose([
+from nn.losses.cross_entropy import CrossEntropyLoss
+
+from optim.sgd import SGD
+
+from train import train
+
+transform = Compose([
     ToNumpy(),
-    Reshape(28, 28),
+    Reshape(IMAGE_ROWS, IMAGE_COLS),
+    Flatten(),
+    Normalize(),
 ])
 
-dataset = MNISTDataset(
-    "data/mnist/train-images.idx3-ubyte",
-    "data/mnist/train-labels.idx1-ubyte",
-    image_transform=compose,
+train_dataset = MNISTDataset(
+    TRAIN_IMAGES,
+    TRAIN_LABELS,
+    image_transform=transform,
 )
 
-loader = DataLoader(
-    dataset,
-    batch_size=32,
+test_dataset = MNISTDataset(
+    TEST_IMAGES,
+    TEST_LABELS,
+    image_transform=transform,
+)
+
+train_loader = DataLoader(
+    dataset=train_dataset,
+    batch_size=BATCH_SIZE,
     shuffle=True,
 )
 
-w = Parameter(np.array([1.0, 2.0]))
+test_loader = DataLoader(
+    dataset=test_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=False,
+)
 
-w.grad = np.array([0.1, 0.2])
+model = Sequential(
+    Linear(INPUT_SIZE, HIDDEN_SIZE),
+    ReLU(),
+    Linear(HIDDEN_SIZE, NUM_CLASSES),
+)
 
-optimizer = SGD([w], learning_rate=0.5)
+criterion = CrossEntropyLoss()
 
-optimizer.step()
+optimizer = SGD(
+    model.parameters(),
+    learning_rate=LEARNING_RATE,
+)
 
-print(w.data)
+train(
+    model=model,
+    train_loader=train_loader,
+    validation_loader=test_loader,
+    criterion=criterion,
+    optimizer=optimizer,
+    epochs=EPOCHS,
+)
+
+print("\n========== Prediction ==========\n")
+
+predict(
+    model=model,
+    data_loader=test_loader,
+    count=20,
+)
